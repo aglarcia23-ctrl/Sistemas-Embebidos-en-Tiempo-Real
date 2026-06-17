@@ -27,7 +27,7 @@ TaskHandle_t LedRapido, LedLento, Monitor, ADC_Aux;
 
 typedef struct{
     uint8_t gpio;
-    uint32_t period_ms;
+    uint32_t period_ms; 
     char name[8];
 } LEDcfg; //dato tipo LEDcfg contiene la configuracion del LED
 
