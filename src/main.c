@@ -22,7 +22,7 @@ la diferencia de prioridad en la salida del terminal?
     La diferencia de prioridad es cuando dos o más tareas salen de su periodo de bloqueo temporal al mismo tiempo. 
     Al competir por el procesador, FreeRTOS siempre ejecutará y enviará al monitor serial primero el mensaje de la 
     tarea con mayor prioridad, determinando el orden en que se imprimen los mensajes en la terminal.
-
+ 
 4. ¿Por qué se usa vTaskDelay(pdMS_TO_TICKS(50)) en lugar de un for con retardo de software? ¿Qué 
 diferencia implica para el planificador? 
     Un retardo por software (bucle for) acapara activamente el CPU, manteniendo a la tarea en estado Running e 
