@@ -13,6 +13,47 @@
 
 #include "esp_freertos_hooks.h"
 
+/* Integrantes: Alan Efrén García Ortiz 9539*/
+
+/*
+¿Por que la variable g_ledRapido debe declararse como volatile? 
+    Porque la variable estará en constante cambio por lo que se declara directo en la RAM
+¿Que ocurre si se omite esa palabra clave? 
+    Puede haber un error de lectura o si 2 o más tareas están leyendo la misma variable,
+    una tarea puede cambiar el valor de esa variable mientras que otra tarea puede estar
+    leyendo un valor anterior de esta misma.
+
+¿En que momento exacto aparece el mensaje [IDLE] en la terminal? Describe el estado de las 
+cuatro tareas en ese instante
+    Una vez que las tareas están suspendidas, se manda a llamar el idle hook y en ese momento 
+    entra el idle task. Las cuatro tareas están suspendidas esperando que el idle hook las 
+    saque de ahí
+
+¿Que diferencia existe entre vTaskDelay() y vTaskDelayUntil()? 
+    vTaskDelay() bloquea la tarea por un tiempo relativo a partir del momento exacto en que 
+    se llama a la función. vTaskDelayUntil() bloquea la tarea basándose en un tiempo absoluto anterior.
+
+¿En cual de las tareas de esta 
+practica seria mas apropiado usar vTaskDelayUntil?
+    Considero que sería más prudente en la tarea vTaskSensor ya que se encarga de muestrear datos 
+    cada 300 ms, requiere un periodo estricto.
+
+¿Por que vTaskLedRapido tiene prioridad menor que vTaskMonitor? Describe que ocurriria si 
+se invirtieran esas prioridades?
+    vTaskMonitor tiene la prioridad más alta porque necesita reaccionar inmediatamente a un evento físico 
+    externo, el botón. y vTaskLedRapido que tiene prioridad 1 solo ejecuta una acción visual que no es crítica.
+
+    Si la tarea del LED tuviera mayor prioridad, podría acaparar el tiempo de procesamiento. 
+    Si el usuario presiona el botón justo cuando el LED está procesando su ciclo, el sistema podría no detectar 
+    el flanco del botón a tiempo, volviéndose lento o ignorando por completo la orden del usuario.
+
+¿Que riesgo existe al leer una variable volatile desde dos tareas distintas sin proteccion?
+    El principal problema es la condición de carrera o corrupción de datos, el RTOS podría interrumpir a la 
+    primera tarea a la mitad del proceso para darle el CPU a la segunda tarea, dejando la variable en un 
+    estado corrupto o inconsistente.
+Investiga el concepto de seccion critica.
+*/
+
 
 #define BOTON 4
 
