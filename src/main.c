@@ -55,7 +55,7 @@ modular actual y la restricción de no modificar las firmas existentes?
  *
  * Plataforma : ESP32 / ESP-IDF 5.x - 6.x  / FreeRTOS
  * IDE        : VS Code + PlatformIO (framework: espidf)
- * Estandar   : C99
+ * Estandar   : C99 
  */
 
 #include "adc_reader.h"
