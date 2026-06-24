@@ -4,17 +4,44 @@
  *
  * =============================================================================
  * CONCLUSION DEL EQUIPO
- * Integrantes: Nombre Apellido, Nombre Apellido, Nombre Apellido
- *
- * El uso de pvParameters con una estructura task_params_t permite instanciar
- * una sola funcion de tarea (vTaskPotLED) tres veces con configuraciones
- * distintas, eliminando codigo duplicado y facilitando el mantenimiento.
- * Al asignar prioridades distintas (1, 2, 3) observamos que el planificador
- * preemptivo de FreeRTOS siempre atiende primero la tarea de mayor prioridad
- * cuando esta sale de su estado bloqueado, independientemente de que tarea
- * estuviera en ejecucion. Como los tres periodos son iguales (50 ms), la
- * diferencia de prioridades se manifiesta en el orden de ejecucion cuando
- * multiples tareas desbloquean al mismo tick del RTOS.
+ * Integrantes: Alan Efrén García Ortiz 9539
+ *  
+¿Por qué es preferible pasar la configuración de canal mediante pvParameters en lugar de usar variables 
+globales o funciones de tarea distintas para cada canal? 
+    Al usar pvParameters, se puede reutilizar una sola función (vTaskPotLED) para los tres canales sin duplicar código. 
+    Si se usa variables globales, se corre el riesgo de sobrescribir datos entre tareas, y si 
+    se usa una función distinta para cada LED, se tendría un código redundante y poco escalable.
+
+2. ¿Qué sucedería si los bloques task_params_t se declararan como variables locales en tasks_create_all() en 
+lugar de static? ¿Cómo lo detectarías experimentalmente? 
+    Si se declara la estructura como variable local, su espacio en memoria se libera en cuanto la función 
+    tasks_create_all() termina. La tarea en ejecución quedaría apuntando a un espacio de memoria vacío.
+
+3. Las tres tareas tienen el mismo periodo (50 ms) pero prioridades distintas. ¿En qué situación se hace visible 
+la diferencia de prioridad en la salida del terminal? 
+    La diferencia de prioridad es cuando dos o más tareas salen de su periodo de bloqueo temporal al mismo tiempo. 
+    Al competir por el procesador, FreeRTOS siempre ejecutará y enviará al monitor serial primero el mensaje de la 
+    tarea con mayor prioridad, determinando el orden en que se imprimen los mensajes en la terminal.
+
+4. ¿Por qué se usa vTaskDelay(pdMS_TO_TICKS(50)) en lugar de un for con retardo de software? ¿Qué 
+diferencia implica para el planificador? 
+    Un retardo por software (bucle for) acapara activamente el CPU, manteniendo a la tarea en estado Running e 
+    impidiendo que tareas de menor prioridad se ejecuten. Por el contrario, vTaskDelay cambia el estado de la 
+    tarea a Blocked, liberando inmediatamente el procesador para que el planificador pueda ejecutar otras 
+    tareas útiles durante ese tiempo de espera.
+
+5. ¿Qué valor esperarías en el stack watermark de la tarea con menor prioridad comparado con el de mayor 
+prioridad? ¿Por qué podrían diferir? 
+    El watermark debería ser muy similar, ya que todas las tareas ejecutan el mismo bloque de código. 
+    Sin embargo, la tarea de menor prioridad podría registrar un watermark ligeramente menor. 
+
+6. Si se añadiera un cuarto potenciómetro y LED, ¿qué cambios mínimos requeriría el código dado el diseño 
+modular actual y la restricción de no modificar las firmas existentes?
+    Definir los pines correspondientes al nuevo canal en las configuraciones de inicialización.
+    Declarar un cuarto bloque de parámetros static const task_params_t con los nuevos índices en tasks.c.  
+    Añadir una cuarta llamada a la función xTaskCreate dentro de tasks_create_all(), pasándole el puntero 
+    a esa nueva estructura.  
+
  * =============================================================================
  *
  * Descripcion:
